@@ -20,6 +20,7 @@ export interface UserConfigFile {
     outputFile?: string;
     userOutput?: string;
     specialJudge?: { language: string, fileName: string };
+    frameJudges?: { language: string, fileName: string }[];
     interactor?: { language: string, fileName: string };
     extraSourceFiles?: { language: string, files: { name: string, dest: string }[] }[];
 }
@@ -48,6 +49,14 @@ async function parseExecutable(src: any, dataPath: string): Promise<Executable> 
 async function parseYamlContent(obj: UserConfigFile, dataName: string): Promise<TestData> {
     const dataPath = pathLib.join(Cfg.testDataDirectory, dataName);
     let extraFiles: { [language: string]: FileContent[] } = {};
+    if (obj.frameJudges) {
+        for (let l of obj.frameJudges) {
+            extraFiles[l.language] = [{
+                name: filterPath(l.fileName),
+                content: await fse.readFile(pathLib.join(dataPath, filterPath(l.fileName)), 'utf8')
+            }];
+        }
+    }
     if (obj.extraSourceFiles) {
         for (let l of obj.extraSourceFiles) {
             extraFiles[l.language] = [];
@@ -90,6 +99,32 @@ export async function readRulesFile(dataName: string): Promise<TestData> {
                 spj = { sourceCode: await fse.readFile(spjName, 'utf8'), language: lang };
                 break;
             }
+        }
+        let extraFiles: { [language: string]: FileContent[] } = {};
+        const cppFrameName = pathLib.join(dataPath, "frame.cpp");
+        if (await fse.pathExists(cppFrameName)) {
+            extraFiles["cpp14-noilinux"] = [{
+                name: "frame.cpp",
+                content: await fse.readFile(cppFrameName, 'utf8')
+            }]
+            extraFiles["cpp17"] = [{
+                name: "frame.cpp",
+                content: await fse.readFile(cppFrameName, 'utf8')
+            }]
+        }
+        const javaFrameName = pathLib.join(dataPath, "frame.java");
+        if (await fse.pathExists(javaFrameName)) {
+            extraFiles["java"] = [{
+                name: "frame.java",
+                content: await fse.readFile(javaFrameName, 'utf8')
+            }]
+        }
+        const pyFrameName = pathLib.join(dataPath, "frame.py");
+        if (await fse.pathExists(pyFrameName)) {
+            extraFiles["python3"] = [{
+                name: "frame.py",
+                content: await fse.readFile(pyFrameName, 'utf8')
+            }]
         }
         let cases: { input: string, output: string, name: string }[] = [];
         let dirContent: string[];
@@ -137,7 +172,7 @@ export async function readRulesFile(dataName: string): Promise<TestData> {
             }],
             spj: spj,
             name: dataName,
-            extraSourceFiles: {}
+            extraSourceFiles: extraFiles
         };
     }
 }

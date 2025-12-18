@@ -8,6 +8,29 @@ import winston = require('winston');
 export async function compile(
     code: string, language: Language, extraFiles: FileContent[] = [], priority: number
 ): Promise<[string, CompilationResult]> {
+    if (extraFiles) {
+        for (const f of extraFiles) {
+            if (f.name === 'frame.cpp') {
+                if (f.content.indexOf('// YOUR CODE GOES HERE') != -1) {
+                    code = f.content.replace('// YOUR CODE GOES HERE', code);
+                } else {
+                    code = '#include "frame.cpp"\n' + code;
+                }
+            }
+            if (f.name === 'frame.java') {
+                if (f.content.indexOf('// YOUR CODE GOES HERE') != -1) {
+                    code = f.content.replace('// YOUR CODE GOES HERE', code);
+                }
+            }
+            if (f.name === 'frame.py') {
+                if (f.content.indexOf('# YOUR CODE GOES HERE') != -1) {
+                    code = f.content.replace('# YOUR CODE GOES HERE', code);
+                } else {
+                    code = 'from frame import *\n' + code;
+                }
+            }
+        }
+    }
     const fingerprint = codeFingerprint(code, language.name);
     winston.debug(`Compiling code, fingerprint = ${fingerprint}`);
     let result: CompilationResult;

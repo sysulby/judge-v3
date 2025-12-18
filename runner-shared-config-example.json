@@ -1,6 +1,6 @@
 {
     "RabbitMQUrl": "amqp://localhost/",
-    "TestData": "/opt/syzoj/data/testdata",
+    "TestData": "/opt/sicily/data/testdata",
     "RedisUrl": "redis://127.0.0.1:6379",
     "Priority": 1,
     "DebugMessageDisplayLimit": 5000,
@@ -16,7 +16,7 @@
         "HOME=/tmp"
     ],
     "SandboxUser": "nobody",
-    "SandboxRoot": "/opt/syzoj/sandbox/rootfs",
-    "BinaryDirectory": "/opt/syzoj/sandbox/bin",
+    "SandboxRoot": "/opt/sicily/sandbox/rootfs",
+    "BinaryDirectory": "/opt/sicily/sandbox/bin",
     "DoNotUseX32ABI": false
 }

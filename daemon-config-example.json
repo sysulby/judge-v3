@@ -3,7 +3,7 @@
     "ServerToken": "",
     "RabbitMQUrl": "amqp://localhost/",
     "RedisUrl": "redis://127.0.0.1:6379",
-    "TestData": "/opt/syzoj/data/testdata",
+    "TestData": "/opt/sicily/data/testdata",
     "Priority": 1,
     "DataDisplayLimit": 100,
     "TempDirectory": "/tmp"
